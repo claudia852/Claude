@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Tuinvisualisatie — E60s</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f5f2ed;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 24px 80px;
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #9a7a5a;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .intro {
+      color: #666;
+      font-size: 0.95rem;
+      max-width: 520px;
+      text-align: center;
+      line-height: 1.75;
+      margin-bottom: 52px;
+    }
+
+    #garden {
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px 24px;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
+      overflow-x: auto;
+    }
+
+    svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 28px;
+      justify-content: center;
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(0,0,0,0.07);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.82rem;
+      color: #555;
+    }
+
+    .legend-swatch {
+      width: 15px;
+      height: 15px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.13);
+      flex-shrink: 0;
+    }
+
+    .dims {
+      margin-top: 28px;
+      font-size: 0.78rem;
+      color: #aaa;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <p class="eyebrow">Tuinontwerp — E60s · bnr 38</p>
+  <h1>3D Tuinvisualisatie</h1>
+  <p class="intro">
+    Isometrische weergave op basis van de bouwtekening.<br>
+    55× tegels &middot; 75× 15×15 blokken &middot; 200× betonband
+  </p>
+
+  <div id="garden">
+    <div id="svg-container"></div>
+    <div class="legend" id="legend"></div>
+    <p class="dims">Breedte ±9385 mm &nbsp;&middot;&nbsp; Plantvak ±300×80 cm</p>
+  </div>
+
+  <script>
+    const TW = 58, TH = 29, TD = 13;
+
+    const MAT = {
+      E: { top: '#b2bac2', left: '#8f979f', right: '#6f777e', label: '200× Betonband' },
+      T: { top: '#d8cbb0', left: '#bfaf93', right: '#a39376', label: '55× Tegels 60×60' },
+      B: { top: '#cbbfa8', left: '#b3a38c', right: '#97876e', label: '75× 15×15 Blokken' },
+      P: { top: '#5c7c4c', left: '#3c5c30', right: '#2a4020', label: 'Plantvak' },
+      S: { top: '#5c7c4c', left: '#3c5c30', right: '#2a4020', label: 'Struiken' },
+    };
+
+    // 13 cols × 11 rows
+    // Gebaseerd op bouwtekening: breedte ~9385mm
+    // Boven: plantvak (300×80cm) + betonband scheiding
+    // Onder: tegelterras + 15×15 blokken pad aan de zijkant
+    const LAYOUT = [
+      ['E','E','E','E','E','E','E','E','E','E','E','E','E'],
+      ['E','P','P','P','P','P','P','P','P','P','P','P','E'],
+      ['E','P','S','P','P','P','S','P','P','P','S','P','E'],
+      ['E','P','P','P','P','P','P','P','P','P','P','P','E'],
+      ['E','E','E','E','E','E','E','E','E','E','E','E','E'],
+      ['T','T','T','T','T','T','T','T','B','B','B','B','T'],
+      ['T','T','T','T','T','T','T','T','B','B','B','B','T'],
+      ['T','T','T','T','T','T','T','T','B','B','B','B','T'],
+      ['T','T','T','T','T','T','T','T','B','B','B','B','T'],
+      ['T','T','T','T','T','T','T','T','B','B','B','B','T'],
+      ['E','E','E','E','E','E','E','E','E','E','E','E','E'],
+    ];
+
+    const NS = 'http://www.w3.org/2000/svg';
+
+    function svgEl(tag, attrs) {
+      const e = document.createElementNS(NS, tag);
+      for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
+      return e;
+    }
+
+    function polyPts(...pts) {
+      return pts.map(([x, y]) => `${Math.round(x*10)/10},${Math.round(y*10)/10}`).join(' ');
+    }
+
+    function isoXY(col, row) {
+      return [(col - row) * TW / 2, (col + row) * TH / 2];
+    }
+
+    function drawTile(g, col, row, type) {
+      const [x, y] = isoXY(col, row);
+      const base = MAT[type] || MAT.T;
+      const stroke = 'rgba(0,0,0,0.055)';
+      const sw = '0.5';
+
+      const top = polyPts([x,y],[x+TW/2,y+TH/2],[x,y+TH],[x-TW/2,y+TH/2]);
+      const lft = polyPts([x-TW/2,y+TH/2],[x,y+TH],[x,y+TH+TD],[x-TW/2,y+TH/2+TD]);
+      const rgt = polyPts([x,y+TH],[x+TW/2,y+TH/2],[x+TW/2,y+TH/2+TD],[x,y+TH+TD]);
+
+      g.appendChild(svgEl('polygon', { points: lft, fill: base.left, stroke, 'stroke-width': sw }));
+      g.appendChild(svgEl('polygon', { points: rgt, fill: base.right, stroke, 'stroke-width': sw }));
+      g.appendChild(svgEl('polygon', { points: top, fill: base.top, stroke, 'stroke-width': sw }));
+
+      if (type === 'S') {
+        [
+          [x,     y + 3,  13, '#1f5e25'],
+          [x - 5, y - 2,  10, '#276b2d'],
+          [x + 5, y - 1,   9, '#2e7d34'],
+          [x,     y - 7,   8, '#388e3c'],
+          [x - 3, y - 11,  6, '#43a047'],
+          [x + 3, y - 12,  5, '#4caf50'],
+        ].forEach(([cx, cy, r, fill]) => {
+          g.appendChild(svgEl('circle', { cx, cy, r, fill }));
+        });
+      }
+    }
+
+    function render() {
+      const rows = LAYOUT.length;
+      const cols = LAYOUT[0].length;
+
+      const vw = (cols + rows) * TW / 2 + TW * 2;
+      const vh = (cols + rows) * TH / 2 + TD + TH * 3;
+      const ox = rows * TW / 2 + TW;
+      const oy = TH * 1.5;
+
+      const svg = svgEl('svg', {
+        viewBox: `0 0 ${vw} ${vh}`,
+        width: vw,
+        height: vh,
+        style: 'max-width:100%;height:auto;display:block;margin:0 auto'
+      });
+
+      const g = svgEl('g', { transform: `translate(${ox},${oy})` });
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          drawTile(g, c, r, LAYOUT[r][c]);
+        }
+      }
+
+      svg.appendChild(g);
+      document.getElementById('svg-container').appendChild(svg);
+
+      const legendEl = document.getElementById('legend');
+      [
+        { key: 'T', color: MAT.T.top, label: MAT.T.label },
+        { key: 'B', color: MAT.B.top, label: MAT.B.label },
+        { key: 'E', color: MAT.E.top, label: MAT.E.label },
+        { key: 'P', color: MAT.P.top, label: MAT.P.label },
+        { key: 'S', color: '#43a047',  label: 'Struiken' },
+      ].forEach(({ color, label }) => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        const sw = document.createElement('div');
+        sw.className = 'legend-swatch';
+        sw.style.background = color;
+        const lbl = document.createElement('span');
+        lbl.textContent = label;
+        item.appendChild(sw);
+        item.appendChild(lbl);
+        legendEl.appendChild(item);
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
