@@ -103,41 +103,14 @@ def bulleted(text):
     }
 
 def create_database(parent_id, title, emoji, properties):
-    # Find the title property name and all non-title properties
-    title_name = next((k for k, v in properties.items() if isinstance(v, dict) and "title" in v), "Name")
-    non_title = {k: v for k, v in properties.items() if not (isinstance(v, dict) and "title" in v)}
-
-    # Step 1: create with just the default "Name" title (most reliable)
     db = notion.databases.create(
         parent={"type": "page_id", "page_id": parent_id},
         icon={"type": "emoji", "emoji": emoji},
         title=[{"text": {"content": title}}],
-        properties={"Name": {"title": {}}}
+        properties=properties
     )
     db_id = db["id"]
-    log(f"  db keys={list(db.keys())}")
-    import json as _json
-    log(f"  raw={_json.dumps(db)[:600]}")
     time.sleep(0.5)
-
-    # Step 2: rename title property to our custom name
-    if title_name != "Name":
-        try:
-            r2 = notion.databases.update(database_id=db_id, properties={"Name": {"name": title_name}})
-            log(f"  after rename props={list(r2.get('properties', {}).keys())}")
-            time.sleep(0.4)
-        except Exception as e:
-            log(f"  WARNING: Could not rename title for {title}: {e}")
-
-    # Step 3: add all other property columns via update
-    if non_title:
-        try:
-            r3 = notion.databases.update(database_id=db_id, properties=non_title)
-            log(f"  after add props={list(r3.get('properties', {}).keys())}")
-            time.sleep(0.4)
-        except Exception as e:
-            log(f"  WARNING: Could not add properties for {title}: {e}")
-
     return db_id
 
 def add_relation(database_id, property_name, target_db_id):
@@ -770,38 +743,32 @@ for src_key, prop_name, tgt_key in relations:
 
 log("✓ Relations wired")
 
-# Diagnostic: verify Workflow Registry properties are intact after relation additions
-time.sleep(3)
-log("Verifying Workflow Registry schema after relations...")
-try:
-    db_check = notion.databases.retrieve(database_id=built["db_workflows"])
-    actual_props = list(db_check.get("properties", {}).keys())
-    log(f"Properties found ({len(actual_props)}): {actual_props}")
-except Exception as e:
-    log(f"WARNING: Could not retrieve database schema: {e}")
-
 # ═══════════════════════════════════════════════════════════════════════════════
 # PHASE 4 — SAMPLE RECORDS
 # ═══════════════════════════════════════════════════════════════════════════════
 
 section("PHASE 4 — Creating Sample Records")
 
-# Probe actual schemas so we use only properties that really exist
-log("Probing database schemas before inserting records...")
-_schemas = {}
-for _k in ["db_workflows", "db_prompts", "db_clients", "db_analyses",
-           "db_sops", "db_automations", "db_changelog", "db_ideas"]:
-    _schemas[_k] = get_db_schema(built[_k])
-    _t = next((n for n, t in _schemas[_k].items() if t == "title"), "Name")
-    log(f"  {_k}: title='{_t}' props={list(_schemas[_k].keys())}")
+_TITLE_NAMES = {
+    "db_workflows":    "Workflow Name",
+    "db_prompts":      "Prompt Name",
+    "db_prompt_tests": "Test Name",
+    "db_analyses":     "Analysis Name",
+    "db_outputs":      "Output Name",
+    "db_reviews":      "Review Name",
+    "db_clients":      "Client Name",
+    "db_projects":     "Project Name",
+    "db_sops":         "SOP Name",
+    "db_automations":  "Automation Name",
+    "db_changelog":    "Change Title",
+    "db_ideas":        "Idea Title",
+}
 
 def tp(db_key):
-    """Return the title property name for this database."""
-    return next((n for n, t in _schemas.get(db_key, {}).items() if t == "title"), "Name")
+    return _TITLE_NAMES.get(db_key, "Name")
 
 def sp(db_key, props):
-    """Keep only props that exist in the database schema."""
-    return safe_props(_schemas.get(db_key, {}), props)
+    return props
 
 # ── Workflow Registry: UK Credit Risk Analysis ─────────────────────────────────
 log("Adding workflow record: UK Credit Risk Analysis...")
