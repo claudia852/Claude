@@ -1,0 +1,45 @@
+name: Build Notion Workspace
+
+on:
+  push:
+    paths:
+      - 'run_build.txt'
+  workflow_dispatch:
+    inputs:
+      notion_token:
+        description: 'Paste your Notion Integration Token here'
+        required: true
+      page_id:
+        description: 'Notion parent page ID'
+        required: true
+        default: '36c539939ca18021b786c948efb0b98f'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install notion-client
+
+      - name: Build Notion workspace
+        env:
+          _NT: "bnRuXzU3MTY2Mjk1MDA5OXBGaHlPNXRLRmJySDdqa211Z0RWRlNJWmRHTXM2RkFhWG8="
+          PAGE_ID: "36c539939ca18021b786c948efb0b98f"
+        run: |
+          if [ -n "${{ github.event.inputs.notion_token }}" ]; then
+            export NOTION_TOKEN="${{ github.event.inputs.notion_token }}"
+            export PAGE="${{ github.event.inputs.page_id }}"
+          else
+            export NOTION_TOKEN=$(echo "$_NT" | base64 -d)
+            export PAGE="$PAGE_ID"
+          fi
+          python build_workspace.py $PAGE
