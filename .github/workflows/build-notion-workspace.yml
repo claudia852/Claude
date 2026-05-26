@@ -54,45 +54,17 @@ print('Script downloaded, size:', len(open('build_workspace.py').read()))
           python3 build_workspace.py "$PAGE" > /tmp/py_out.txt 2>&1
           py_exit=$?
 
-          echo "--- build exit: $py_exit ---"
+          echo "--- build exit code: $py_exit ---"
           tail -30 /tmp/py_out.txt
 
-          # Write output back to repo using Python (avoids shell JSON-escaping issues)
-          python3 << 'PYEOF'
-import base64, json, os, urllib.request, urllib.error
-
-with open('/tmp/py_out.txt', 'rb') as f:
-    content = base64.b64encode(f.read()).decode('ascii')
-
-token = os.environ['GH_TOKEN']
-url = 'https://api.github.com/repos/claudia852/Claude/contents/build_output.txt'
-hdrs = {
-    'Authorization': f'token {token}',
-    'Content-Type': 'application/json',
-    'Accept': 'application/vnd.github.v3+json',
-}
-
-sha = ''
-try:
-    req = urllib.request.Request(url, headers=hdrs)
-    with urllib.request.urlopen(req) as r:
-        sha = json.loads(r.read()).get('sha', '')
-    print(f'write-back: got SHA {sha[:12]}...')
-except Exception as e:
-    print(f'write-back: SHA lookup failed: {e}')
-
-body = {'message': 'workflow: build output', 'content': content}
-if sha:
-    body['sha'] = sha
-
-req = urllib.request.Request(url, json.dumps(body).encode(), hdrs, method='PUT')
-try:
-    with urllib.request.urlopen(req) as r:
-        print(f'write-back: OK (HTTP {r.status})')
-except urllib.error.HTTPError as e:
-    print(f'write-back: FAILED {e.code}: {e.read().decode()[:400]}')
-except Exception as e:
-    print(f'write-back: ERROR: {e}')
-PYEOF
+          # Write build output back to repo using git (reliable, no JSON escaping)
+          git clone -q https://github.com/claudia852/Claude.git /tmp/output_repo
+          cp /tmp/py_out.txt /tmp/output_repo/build_output.txt
+          git -C /tmp/output_repo config user.email "action@github.com"
+          git -C /tmp/output_repo config user.name "GitHub Actions"
+          git -C /tmp/output_repo add build_output.txt
+          git -C /tmp/output_repo commit -m "workflow: build output"
+          git -C /tmp/output_repo remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/claudia852/Claude.git"
+          git -C /tmp/output_repo push -q origin main
 
           exit $py_exit
