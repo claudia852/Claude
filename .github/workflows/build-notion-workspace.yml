@@ -3,8 +3,11 @@ name: Build Notion Workspace
 on:
   workflow_dispatch:
     inputs:
+      notion_token:
+        description: 'Paste your Notion Integration Token here'
+        required: true
       page_id:
-        description: 'Notion parent page ID (from page URL, 32-char hex string)'
+        description: 'Notion parent page ID'
         required: true
         default: '36c539939ca18021b786c948efb0b98f'
 
@@ -26,5 +29,5 @@ jobs:
 
       - name: Build Notion workspace
         env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_TOKEN: ${{ github.event.inputs.notion_token }}
         run: python build_workspace.py ${{ github.event.inputs.page_id }}
