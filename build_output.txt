@@ -1,14 +1,9 @@
-WARNING:notion_client:request fail: code=validation_error, message=Workflow ID is not a property that exists. Status is not a property that exists. Department is not a property that exists. Version is not a property that exists. Automation Status is not a property that exists. Tags is not a property that exists. Notes is not a property that exists., attempt=0, request_id=751060ed-d178-4f8e-9ea8-295a678276e8
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=a8e6f774-c231-4d3f-beba-b7cf9aec34db
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=e05e335b-9019-45e8-b74c-dd6def37e203
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=d2c16fd7-d049-4685-a03e-2891ea2ef22a
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=4bb2ea17-8f40-4593-a338-578dfb0bf612
 
 ────────────────────────────────────────────────────────────
   PHASE 1 — Building Page Hierarchy
 ────────────────────────────────────────────────────────────
   Creating root hub page...
-    Hub created: 36c53993-9ca1-819c-aa2e-cb4b079ee386
+    Hub created: 36c53993-9ca1-816d-ba33-e6b51fa5964f
   Creating section: 00 — Home Dashboard
   Creating section: 01 — Command Centre
   Creating section: 02 — Workflows
@@ -34,65 +29,77 @@ WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is 
   PHASE 2 — Building Databases
 ────────────────────────────────────────────────────────────
   Creating Workflow Registry database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Workflow Registry: 35803ef1-8905-46fa-8ca2-21f4d324a8f2
+    Workflow Registry: 12d1949c-5884-4235-bbdb-48113e4bbab4
   Creating Master Prompt Database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Master Prompt Database: 68e07fd9-c0bf-4437-975d-5959b766a451
+    Master Prompt Database: ba2a38c5-c30e-4f4b-8cbd-ca6960b50465
   Creating Prompt Testing Log database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Prompt Testing Log: 666c4e71-f1c6-436c-9acc-41e0ffb2bda1
+    Prompt Testing Log: bc2a4955-9b69-4e17-bed5-82fa4942f710
   Creating Analysis Tracker database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Analysis Tracker: 95803ed7-989d-472e-93e7-b319e45bcd6f
+    Analysis Tracker: e50d2134-b3ff-41d5-89cc-a396aabfe1f4
   Creating Output Archive database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Output Archive: 99c9f31d-b49f-4d0e-85e6-4863259042db
+    Output Archive: 354c3fdc-9f8f-47f4-98d1-271a2801319e
   Creating Risk Review Board database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Risk Review Board: a1f6e432-ca56-467c-b443-d8acea291f34
+    Risk Review Board: 67fc4fc9-0c18-4b14-80a2-e51258458e39
   Creating Client Registry database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Client Registry: 230fd7ab-3666-4d07-abb5-867ad7259a4e
+    Client Registry: 3bb6443f-18e2-4d13-8ff7-55fcd6d9b7a6
   Creating Client Projects database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Client Projects: 2384ac6b-c21b-4b64-856c-b8c90f35d572
+    Client Projects: 06aceb52-cda9-471f-b9d9-b2b1e0e82c21
   Creating SOP Registry database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    SOP Registry: 945b1906-3c0a-42ae-892c-d7930d20ca81
+    SOP Registry: 86362634-8e9c-42c2-a96e-63c5b6051646
   Creating Automation Registry database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Automation Registry: a22607ac-270b-4467-974f-8a6c1136ddf2
+    Automation Registry: cdd15657-dc47-4b3e-a0f4-470ac1cabc3a
   Creating Change Log database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Change Log: 0f9999a0-3ce3-4b0c-96cc-5ad6b0ac411e
+    Change Log: b3cc431f-0179-43c4-b2ba-2e5b8c4b6a52
   Creating Ideas Backlog database...
+    db keys=['object', 'id', 'title', 'description', 'parent', 'is_inline', 'in_trash', 'is_locked', 'created_time', 'last_edited_time', 'data_sources', 'icon', 'cover', 'url', 'public_url', 'archived', 'request_id']
     created props=[]
     after rename props=[]
     after add props=[]
-    Ideas Backlog: 26f8782d-b1f3-45d7-a903-99d39f25feb6
+    Ideas Backlog: f6b79321-a530-4ea3-9da2-7c0c42c5b677
   ✓ All databases created
 
 ────────────────────────────────────────────────────────────
@@ -127,6 +134,22 @@ WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is 
   Properties found (0): []
 
 ────────────────────────────────────────────────────────────
+WARNING:notion_client:request fail: code=validation_error, message=Workflow ID is not a property that exists. Status is not a property that exists. Department is not a property that exists. Version is not a property that exists. Automation Status is not a property that exists. Tags is not a property that exists. Notes is not a property that exists., attempt=0, request_id=2a1614ee-2fed-4aad-b55f-2322b42d1df1
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=81ec9e2a-a1a7-4911-8488-a3c6203034fa
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=8a6829d8-0159-4dc2-bb7d-2f13f06e5122
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=00238d42-06d3-4a60-acf0-78f02024fcf8
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=271c8080-2dba-49e9-b559-21ae87376079
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=071041fc-a25d-4206-999f-b02b84752a2a
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=b5330bdd-3a2f-4d38-9c26-9ea60e2b76ed
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=cb6f13da-90ec-4058-b1bc-57ad2f01c26f
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=ac54ac5e-0668-4ae9-a07c-372664779daf
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=32c95394-0394-4468-972b-71c8e21c6b0f
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=cc32a733-0721-4b47-b34d-4c974c2e71a0
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=cb839438-2edf-44b2-b804-b2b6dba95504
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=d386ee41-86cf-4d3f-a2a8-91746e8e9f7c
+WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=784161a6-375b-4841-95a9-cc36e18642c9
+WARNING:notion_client:request fail: code=validation_error, message=Client ID is not a property that exists. Status is not a property that exists. Industry is not a property that exists. Contact Name is not a property that exists. Contact Email is not a property that exists. Onboarded is not a property that exists. Notes is not a property that exists., attempt=0, request_id=07224442-38f1-433c-b7e1-7bf4a5875881
+WARNING:notion_client:request fail: code=validation_error, message=Analysis ID is not a property that exists. Company Name is not a property that exists. Companies House No is not a property that exists. Filing Period is not a property that exists. Date Initiated is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists., attempt=0, request_id=04bb4bbf-4921-4fd9-b673-8fcc82bf9957
   PHASE 4 — Creating Sample Records
 ────────────────────────────────────────────────────────────
   Probing database schemas before inserting records...
@@ -147,25 +170,6 @@ WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is 
     + CRA — Extraction — Revenue & Profitability — v1.0
     WARNING record skipped: Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists.
     + CRA — Extraction — Balance Sheet Assets — v1.0
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=5896faed-210c-45f0-8d95-99b18c5fa3a4
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=44e96edf-564c-4ccb-b31c-72a360224f17
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=e5466a06-02d3-4dc6-9e65-5fa41dd4dc92
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=67e67ee5-79c3-4c96-9385-3b5130b6cf83
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=be2be8fe-f066-4f0d-a7bf-1e8dec6c1203
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=c88f0877-db74-4466-bb73-84630142c2bf
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=717aa078-a570-453e-8319-4d2bfe4b9f42
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=81f362b9-5f6f-4b0c-a348-b6b616565633
-WARNING:notion_client:request fail: code=validation_error, message=Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists., attempt=0, request_id=e00da289-6302-433c-b865-ddb3020e23ac
-WARNING:notion_client:request fail: code=validation_error, message=Client ID is not a property that exists. Status is not a property that exists. Industry is not a property that exists. Contact Name is not a property that exists. Contact Email is not a property that exists. Onboarded is not a property that exists. Notes is not a property that exists., attempt=0, request_id=13b8803e-b81a-4a22-bcdd-701ee1ae9d51
-WARNING:notion_client:request fail: code=validation_error, message=Analysis ID is not a property that exists. Company Name is not a property that exists. Companies House No is not a property that exists. Filing Period is not a property that exists. Date Initiated is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists., attempt=0, request_id=fe5d9329-e849-441c-a83d-cba20ea145dc
-WARNING:notion_client:request fail: code=validation_error, message=SOP ID is not a property that exists. Status is not a property that exists. Version is not a property that exists. Department is not a property that exists. Last Reviewed is not a property that exists. Tags is not a property that exists., attempt=0, request_id=7c0e80e0-a5dc-4376-8527-badec1d3c6ea
-WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=88d36513-dd64-4db4-a0bb-9508eecf940d
-WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=08b349f0-cff0-43b2-88aa-68a59822b671
-WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=fa55fe9d-c3ed-4296-a900-699fb525f629
-WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=8f92b3ce-0288-41d9-a490-3f0bc283b8f5
-WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=e85b75fc-92a2-4470-956a-53fbda5890e8
-WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=9987d69e-edb8-4662-8116-ad6db9d229a8
-WARNING:notion_client:request fail: code=validation_error, message=Change ID is not a property that exists. Change Type is not a property that exists. Area is not a property that exists. Date is not a property that exists. Version Before is not a property that exists. Version After is not a property that exists. Reason is not a property that exists. Impact is not a property that exists., attempt=0, request_id=a1043e8e-16d4-4a3a-b5f0-4f1ba683ee89
     WARNING record skipped: Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists.
     + CRA — Extraction — Balance Sheet Liabilities — v1.0
     WARNING record skipped: Prompt ID is not a property that exists. Category is not a property that exists. AI Model is not a property that exists. Status is not a property that exists. Version is not a property that exists. Prompt Body is not a property that exists. Input Required is not a property that exists. Expected Output is not a property that exists. Tags is not a property that exists. Created is not a property that exists.
@@ -190,6 +194,19 @@ WARNING:notion_client:request fail: code=validation_error, message=Change ID is 
     WARNING record skipped: Client ID is not a property that exists. Status is not a property that exists. Industry is not a property that exists. Contact Name is not a property that exists. Contact Email is not a property that exists. Onboarded is not a property that exists. Notes is not a property that exists.
   Adding sample analysis record...
     WARNING record skipped: Analysis ID is not a property that exists. Company Name is not a property that exists. Companies House No is not a property that exists. Filing Period is not a property that exists. Date Initiated is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists.
+WARNING:notion_client:request fail: code=validation_error, message=SOP ID is not a property that exists. Status is not a property that exists. Version is not a property that exists. Department is not a property that exists. Last Reviewed is not a property that exists. Tags is not a property that exists., attempt=0, request_id=e7e4b4cd-2d3e-4d94-b572-b5bd93cc7110
+WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=babcd1e7-d807-433a-9c24-6f20fe616392
+WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=3b496c42-d5f1-4d6d-8d64-a8c685d42e49
+WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=888331f3-7522-49c1-a3dd-08318d6368be
+WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=dd6bd746-6354-4c33-a74a-445461af1d9d
+WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=4a155eaa-8dd9-4500-aade-1c8babcef52d
+WARNING:notion_client:request fail: code=validation_error, message=Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists., attempt=0, request_id=e9a20462-144f-4cae-8bfc-3e78cd5cf96d
+WARNING:notion_client:request fail: code=validation_error, message=Change ID is not a property that exists. Change Type is not a property that exists. Area is not a property that exists. Date is not a property that exists. Version Before is not a property that exists. Version After is not a property that exists. Reason is not a property that exists. Impact is not a property that exists., attempt=0, request_id=20b908ad-e2a5-4bf2-986c-129b2fe5c94d
+WARNING:notion_client:request fail: code=validation_error, message=Change ID is not a property that exists. Change Type is not a property that exists. Area is not a property that exists. Date is not a property that exists. Version Before is not a property that exists. Version After is not a property that exists. Reason is not a property that exists. Impact is not a property that exists., attempt=0, request_id=97cb1b32-f3a3-4941-a26c-32832214ca30
+WARNING:notion_client:request fail: code=validation_error, message=Area is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists. Effort Estimate is not a property that exists. Submitted Date is not a property that exists., attempt=0, request_id=7ecc6fa3-69d5-44a1-b326-e3e7df931ea7
+WARNING:notion_client:request fail: code=validation_error, message=Area is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists. Effort Estimate is not a property that exists. Submitted Date is not a property that exists., attempt=0, request_id=e597d4de-7d3b-421a-8c78-5f58b10d1308
+WARNING:notion_client:request fail: code=validation_error, message=Area is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists. Effort Estimate is not a property that exists. Submitted Date is not a property that exists., attempt=0, request_id=b5f53dfd-1036-4e66-9c15-4cd49eb86452
+WARNING:notion_client:request fail: code=validation_error, message=Area is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists. Effort Estimate is not a property that exists. Submitted Date is not a property that exists., attempt=0, request_id=79855abd-43aa-42b8-9ad5-c027cac889cc
   Adding SOP record: How to Run a Credit Risk Analysis...
     WARNING record skipped: SOP ID is not a property that exists. Status is not a property that exists. Version is not a property that exists. Department is not a property that exists. Last Reviewed is not a property that exists. Tags is not a property that exists.
   Adding automation ideas...
@@ -206,11 +223,6 @@ WARNING:notion_client:request fail: code=validation_error, message=Change ID is 
     WARNING record skipped: Automation ID is not a property that exists. Tool is not a property that exists. Status is not a property that exists. Trigger is not a property that exists. Action is not a property that exists. Priority is not a property that exists.
     + New Client Onboarding Checklist
   Adding initial change log entries...
-WARNING:notion_client:request fail: code=validation_error, message=Change ID is not a property that exists. Change Type is not a property that exists. Area is not a property that exists. Date is not a property that exists. Version Before is not a property that exists. Version After is not a property that exists. Reason is not a property that exists. Impact is not a property that exists., attempt=0, request_id=822baa81-02eb-4a3e-ace9-6d9a8ba4b2df
-WARNING:notion_client:request fail: code=validation_error, message=Area is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists. Effort Estimate is not a property that exists. Submitted Date is not a property that exists., attempt=0, request_id=12c1192a-d5f2-40cf-afc5-bb2fe421d9f9
-WARNING:notion_client:request fail: code=validation_error, message=Area is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists. Effort Estimate is not a property that exists. Submitted Date is not a property that exists., attempt=0, request_id=0310cf50-ece6-4123-8f76-06ed20fa9dc5
-WARNING:notion_client:request fail: code=validation_error, message=Area is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists. Effort Estimate is not a property that exists. Submitted Date is not a property that exists., attempt=0, request_id=129d274b-4314-4a00-aa71-8115f0315765
-WARNING:notion_client:request fail: code=validation_error, message=Area is not a property that exists. Status is not a property that exists. Priority is not a property that exists. Notes is not a property that exists. Effort Estimate is not a property that exists. Submitted Date is not a property that exists., attempt=0, request_id=488338c2-0858-4f36-b4dd-d2fa5a82f438
     WARNING record skipped: Change ID is not a property that exists. Change Type is not a property that exists. Area is not a property that exists. Date is not a property that exists. Version Before is not a property that exists. Version After is not a property that exists. Reason is not a property that exists. Impact is not a property that exists.
     WARNING record skipped: Change ID is not a property that exists. Change Type is not a property that exists. Area is not a property that exists. Date is not a property that exists. Version Before is not a property that exists. Version After is not a property that exists. Reason is not a property that exists. Impact is not a property that exists.
   Adding ideas backlog entries...
@@ -272,20 +284,20 @@ WARNING:notion_client:request fail: code=validation_error, message=Area is not a
 
   Database IDs (save these for automations):
 
-  db_workflows           35803ef1-8905-46fa-8ca2-21f4d324a8f2
-  db_prompts             68e07fd9-c0bf-4437-975d-5959b766a451
-  db_prompt_tests        666c4e71-f1c6-436c-9acc-41e0ffb2bda1
-  db_analyses            95803ed7-989d-472e-93e7-b319e45bcd6f
-  db_outputs             99c9f31d-b49f-4d0e-85e6-4863259042db
-  db_reviews             a1f6e432-ca56-467c-b443-d8acea291f34
-  db_clients             230fd7ab-3666-4d07-abb5-867ad7259a4e
-  db_projects            2384ac6b-c21b-4b64-856c-b8c90f35d572
-  db_sops                945b1906-3c0a-42ae-892c-d7930d20ca81
-  db_automations         a22607ac-270b-4467-974f-8a6c1136ddf2
-  db_changelog           0f9999a0-3ce3-4b0c-96cc-5ad6b0ac411e
-  db_ideas               26f8782d-b1f3-45d7-a903-99d39f25feb6
+  db_workflows           12d1949c-5884-4235-bbdb-48113e4bbab4
+  db_prompts             ba2a38c5-c30e-4f4b-8cbd-ca6960b50465
+  db_prompt_tests        bc2a4955-9b69-4e17-bed5-82fa4942f710
+  db_analyses            e50d2134-b3ff-41d5-89cc-a396aabfe1f4
+  db_outputs             354c3fdc-9f8f-47f4-98d1-271a2801319e
+  db_reviews             67fc4fc9-0c18-4b14-80a2-e51258458e39
+  db_clients             3bb6443f-18e2-4d13-8ff7-55fcd6d9b7a6
+  db_projects            06aceb52-cda9-471f-b9d9-b2b1e0e82c21
+  db_sops                86362634-8e9c-42c2-a96e-63c5b6051646
+  db_automations         cdd15657-dc47-4b3e-a0f4-470ac1cabc3a
+  db_changelog           b3cc431f-0179-43c4-b2ba-2e5b8c4b6a52
+  db_ideas               f6b79321-a530-4ea3-9da2-7c0c42c5b677
 
-  Root Hub ID: 36c53993-9ca1-819c-aa2e-cb4b079ee386
+  Root Hub ID: 36c53993-9ca1-816d-ba33-e6b51fa5964f
   ═══════════════════════════════════════════════
   Workspace built successfully. Open Notion to review.
 
