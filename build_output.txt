@@ -1,41 +1,109 @@
-WARNING:notion_client:request fail: code=validation_error, message=body failed validation: body.parent.type should be defined, instead was `undefined`., attempt=0, request_id=573ca4bd-b607-4165-a329-067911653d49
+WARNING:notion_client:request fail: code=validation_error, message=Workflow Name is not a property that exists. Workflow ID is not a property that exists. Status is not a property that exists. Department is not a property that exists. Version is not a property that exists. Automation Status is not a property that exists. Tags is not a property that exists. Notes is not a property that exists., attempt=0, request_id=1de2a8da-fab3-4842-bb9f-b9bf83858dd6
 
 ────────────────────────────────────────────────────────────
   PHASE 1 — Building Page Hierarchy
 ────────────────────────────────────────────────────────────
   Creating root hub page...
-  Hub: 36c53993-9ca1-8120-9b5b-f6fc3da57669
-  Creating: 00 — Home Dashboard
-  Creating: 01 — Command Centre
-  Creating: 02 — Workflows
-  Creating: 03 — Prompt Library
-  Creating: 04 — Clients
-  Creating: 05 — Knowledge Base
-  Creating: 06 — SOPs & Documentation
-  Creating: 07 — Automations
-  Creating: 08 — Improvements & Changelog
-  Creating: 09 — Settings & Meta
+    Hub created: 36c53993-9ca1-8117-9ecd-f2a2bbacb1da
+  Creating section: 00 — Home Dashboard
+  Creating section: 01 — Command Centre
+  Creating section: 02 — Workflows
+  Creating section: 03 — Prompt Library
+  Creating section: 04 — Clients
+  Creating section: 05 — Knowledge Base
+  Creating section: 06 — SOPs & Documentation
+  Creating section: 07 — Automations
+  Creating section: 08 — Improvements & Changelog
+  Creating section: 09 — Settings & Meta
+  Creating Command Centre sub-pages...
+  Creating Workflow sub-pages...
+  Creating Prompt Library sub-pages...
+  Creating Clients sub-pages...
+  Creating Knowledge Base sub-pages...
+  Creating SOP sub-pages...
+  Creating Automation sub-pages...
+  Creating Improvements sub-pages...
+  Creating Settings sub-pages...
   ✓ Page hierarchy complete
 
 ────────────────────────────────────────────────────────────
   PHASE 2 — Building Databases
 ────────────────────────────────────────────────────────────
+  Creating Workflow Registry database...
+    Workflow Registry: 37c38003-bbb5-4064-b738-97c4402819bd
+  Creating Master Prompt Database...
+    Master Prompt Database: 980fd49a-da46-4efb-b064-c64417e710ca
+  Creating Prompt Testing Log database...
+    Prompt Testing Log: 68de0687-cfca-4a24-a7a5-eb8925aed902
+  Creating Analysis Tracker database...
+    Analysis Tracker: 5de35387-08ce-405b-800c-1c206ccc51a8
+  Creating Output Archive database...
+    Output Archive: 53306199-8cc5-4ef3-9811-88dc73a5f149
+  Creating Risk Review Board database...
+    Risk Review Board: e5114df0-4e4a-47bc-bdbc-d1a290d0eb49
+  Creating Client Registry database...
+    Client Registry: 1133a6f1-6c4f-45d6-89b9-d851e2afab91
+  Creating Client Projects database...
+    Client Projects: 7e6e2fb9-6f04-4496-a7d2-e57fcfdc4e9d
+  Creating SOP Registry database...
+    SOP Registry: 1cfec74a-6e0a-48c4-b9c4-2b55a1ff9d00
+  Creating Automation Registry database...
+    Automation Registry: e4f1d8a8-c7ec-4904-ad91-dc316fbee4bc
+  Creating Change Log database...
+    Change Log: 4477933b-b1d0-4803-9b7a-4d49b991af8d
+  Creating Ideas Backlog database...
+    Ideas Backlog: 38089eea-d41c-42a0-8861-8ba0184696a5
+  ✓ All databases created
+
+────────────────────────────────────────────────────────────
+  PHASE 3 — Wiring Up Relations
+────────────────────────────────────────────────────────────
+    db_workflows → [Linked SOPs] → db_sops
+    db_workflows → [Linked Prompts] → db_prompts
+    db_workflows → [Linked Clients] → db_clients
+    db_workflows → [Linked Automations] → db_automations
+    db_prompts → [Workflow] → db_workflows
+    db_prompts → [Linked Tests] → db_prompt_tests
+    db_prompt_tests → [Prompt] → db_prompts
+    db_analyses → [Prompts Used] → db_prompts
+    db_analyses → [Output Records] → db_outputs
+    db_analyses → [Risk Review] → db_reviews
+    db_analyses → [Client] → db_clients
+    db_outputs → [Analysis] → db_analyses
+    db_outputs → [Prompt Used] → db_prompts
+    db_reviews → [Analysis] → db_analyses
+    db_reviews → [Client] → db_clients
+    db_clients → [Projects] → db_projects
+    db_clients → [Workflows Used] → db_workflows
+    db_clients → [Analyses] → db_analyses
+    db_projects → [Client] → db_clients
+    db_sops → [Workflow] → db_workflows
+    db_automations → [Workflow] → db_workflows
+    db_changelog → [Linked Prompt] → db_prompts
+    db_changelog → [Linked Workflow] → db_workflows
+    db_ideas → [Linked Workflow] → db_workflows
+  ✓ Relations wired
+
+────────────────────────────────────────────────────────────
+  PHASE 4 — Creating Sample Records
+────────────────────────────────────────────────────────────
+  Adding workflow record: UK Credit Risk Analysis...
 Traceback (most recent call last):
   File "/home/runner/.local/lib/python3.10/site-packages/notion_client/client.py", line 211, in _parse_response
     response.raise_for_status()
   File "/home/runner/.local/lib/python3.10/site-packages/httpx/_models.py", line 829, in raise_for_status
     raise HTTPStatusError(message, request=request, response=self)
-httpx.HTTPStatusError: Client error '400 Bad Request' for url 'https://api.notion.com/v1/databases'
+httpx.HTTPStatusError: Client error '400 Bad Request' for url 'https://api.notion.com/v1/pages'
 For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/home/runner/work/Claude/Claude/build_workspace.py", line 161, in <module>
-    built["db_workflows"] = create_database(built["wfl_registry_page"], "Workflow Registry", "⚙️", {
-  File "/home/runner/work/Claude/Claude/build_workspace.py", line 62, in create_database
-    db = notion.databases.create(
-  File "/home/runner/.local/lib/python3.10/site-packages/notion_client/api_endpoints.py", line 170, in create
+  File "/home/runner/work/Claude/Claude/build_workspace.py", line 734, in <module>
+    create_record(built["db_workflows"], {
+  File "/home/runner/work/Claude/Claude/build_workspace.py", line 131, in create_record
+    notion.pages.create(
+  File "/home/runner/.local/lib/python3.10/site-packages/notion_client/api_endpoints.py", line 282, in create
     return self.parent.request(
   File "/home/runner/.local/lib/python3.10/site-packages/notion_client/client.py", line 374, in request
     return self._execute_with_retry(method, path, query, body, form_data, auth)
@@ -47,4 +115,4 @@ Traceback (most recent call last):
     response_body = self._parse_response(response)
   File "/home/runner/.local/lib/python3.10/site-packages/notion_client/client.py", line 214, in _parse_response
     raise build_request_error(error.response, body_text)
-notion_client.errors.APIResponseError: body failed validation: body.parent.type should be defined, instead was `undefined`.
+notion_client.errors.APIResponseError: Workflow Name is not a property that exists. Workflow ID is not a property that exists. Status is not a property that exists. Department is not a property that exists. Version is not a property that exists. Automation Status is not a property that exists. Tags is not a property that exists. Notes is not a property that exists.
