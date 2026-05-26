@@ -722,6 +722,15 @@ for src_key, prop_name, tgt_key in relations:
 
 log("✓ Relations wired")
 
+# Diagnostic: verify Workflow Registry properties are intact after relation additions
+time.sleep(3)
+log("Verifying Workflow Registry schema after relations...")
+try:
+    db_check = notion.databases.retrieve(database_id=built["db_workflows"])
+    actual_props = list(db_check.get("properties", {}).keys())
+    log(f"Properties found ({len(actual_props)}): {actual_props}")
+except Exception as e:
+    log(f"WARNING: Could not retrieve database schema: {e}")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PHASE 4 — SAMPLE RECORDS
