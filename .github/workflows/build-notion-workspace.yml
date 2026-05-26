@@ -43,8 +43,6 @@ jobs:
             export PAGE="$PAGE_ID"
           fi
 
-          pip3 install --quiet notion-client
-
           python3 build_workspace.py "$PAGE" > build_output.txt 2>&1
           py_exit=$?
 

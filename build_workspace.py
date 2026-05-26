@@ -4,7 +4,6 @@ Next Layer Concepts — Notion Workspace Builder v1.0
 Builds the complete AI Operations System workspace in Notion.
 
 Usage:
-    pip install notion-client
     export NOTION_TOKEN="ntn_your_token_here"
     python build_workspace.py <parent_page_id>
 
@@ -17,12 +16,8 @@ import os
 import sys
 import time
 import json
-
-try:
-    from notion_client import Client
-except ImportError:
-    print("ERROR: notion-client not installed. Run: pip install notion-client")
-    sys.exit(1)
+import urllib.request
+import urllib.error
 
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
@@ -39,9 +34,39 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 ROOT_PARENT_ID = sys.argv[1].replace("-", "")
-
-notion = Client(auth=TOKEN)
 built = {}  # Stores created page/database IDs by key
+
+_NOTION_VERSION = "2022-06-28"
+_BASE_URL = "https://api.notion.com/v1"
+
+def _api(method, path, body=None):
+    headers = {
+        "Authorization": f"Bearer {TOKEN}",
+        "Content-Type": "application/json",
+        "Notion-Version": _NOTION_VERSION,
+    }
+    data = json.dumps(body).encode() if body is not None else None
+    req = urllib.request.Request(f"{_BASE_URL}/{path}", data=data, headers=headers, method=method)
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                return json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            err_body = e.read()
+            try:
+                err = json.loads(err_body)
+            except Exception:
+                err = {"message": err_body.decode(errors="replace")}
+            if e.code == 429 or (e.code >= 500 and attempt < 2):
+                time.sleep(2 ** attempt)
+                continue
+            raise Exception(f"Notion API {e.code}: {err.get('message', str(err))}")
+        except Exception as exc:
+            if attempt < 2:
+                time.sleep(2 ** attempt)
+                continue
+            raise
+    raise Exception("Max retries exceeded")
 
 
 # ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -55,15 +80,14 @@ def section(title):
     print(f"{'─' * 60}")
 
 def create_page(parent_id, title, emoji="📄", body_blocks=None):
-    children = body_blocks or []
-    page = notion.pages.create(
-        parent={"type": "page_id", "page_id": parent_id},
-        icon={"type": "emoji", "emoji": emoji},
-        properties={
-            "title": {"title": [{"text": {"content": title}}]}
-        },
-        children=children
-    )
+    body = {
+        "parent": {"type": "page_id", "page_id": parent_id},
+        "icon": {"type": "emoji", "emoji": emoji},
+        "properties": {"title": {"title": [{"text": {"content": title}}]}},
+    }
+    if body_blocks:
+        body["children"] = body_blocks
+    page = _api("POST", "pages", body)
     time.sleep(0.35)
     return page["id"]
 
@@ -103,20 +127,18 @@ def bulleted(text):
     }
 
 def create_database(parent_id, title, emoji, properties):
-    db = notion.databases.create(
-        parent={"type": "page_id", "page_id": parent_id},
-        icon={"type": "emoji", "emoji": emoji},
-        title=[{"text": {"content": title}}],
-        properties=properties
-    )
-    db_id = db["id"]
+    db = _api("POST", "databases", {
+        "parent": {"type": "page_id", "page_id": parent_id},
+        "icon": {"type": "emoji", "emoji": emoji},
+        "title": [{"type": "text", "text": {"content": title}}],
+        "properties": properties,
+    })
     time.sleep(0.5)
-    return db_id
+    return db["id"]
 
 def add_relation(database_id, property_name, target_db_id):
-    notion.databases.update(
-        database_id=database_id,
-        properties={
+    _api("PATCH", f"databases/{database_id}", {
+        "properties": {
             property_name: {
                 "relation": {
                     "database_id": target_db_id,
@@ -125,26 +147,18 @@ def add_relation(database_id, property_name, target_db_id):
                 }
             }
         }
-    )
+    })
     time.sleep(0.35)
 
 def create_record(database_id, properties):
     try:
-        notion.pages.create(
-            parent={"type": "database_id", "database_id": database_id},
-            properties=properties
-        )
+        _api("POST", "pages", {
+            "parent": {"type": "database_id", "database_id": database_id},
+            "properties": properties,
+        })
         time.sleep(0.35)
     except Exception as e:
         log(f"  WARNING record skipped: {e}")
-
-def get_db_schema(db_id):
-    try:
-        db = notion.databases.retrieve(database_id=db_id)
-        return {n: c.get("type", "") for n, c in db.get("properties", {}).items()}
-    except Exception as e:
-        log(f"  WARNING cannot read schema {db_id}: {e}")
-        return {}
 
 def safe_props(schema, props):
     if not schema:
@@ -419,59 +433,6 @@ log("✓ Page hierarchy complete")
 # ═══════════════════════════════════════════════════════════════════════════════
 
 section("PHASE 2 — Building Databases")
-
-# ── DIAGNOSTIC: test database schema creation directly via urllib ─────────────
-import json as _j, urllib.request as _ur, urllib.error as _ue
-import notion_client as _nc_module
-log(f"notion-client version: {getattr(_nc_module, '__version__', 'unknown')}")
-_diag_headers = {
-    "Authorization": f"Bearer {TOKEN}",
-    "Content-Type": "application/json",
-    "Notion-Version": "2022-06-28",
-}
-_diag_body = _j.dumps({
-    "parent": {"type": "page_id", "page_id": ROOT_PARENT_ID},
-    "title": [{"type": "text", "text": {"content": "DIAG TEST DB"}}],
-    "properties": {
-        "Name": {"title": {}},
-        "MyStatus": {"select": {"options": [{"name": "Active", "color": "green"}]}},
-        "MyText": {"rich_text": {}},
-    }
-}).encode()
-try:
-    _req = _ur.Request("https://api.notion.com/v1/databases", data=_diag_body, headers=_diag_headers, method="POST")
-    with _ur.urlopen(_req, timeout=30) as _resp:
-        _diag_resp = _j.loads(_resp.read())
-    log(f"DIAG direct API status: 2xx OK")
-    log(f"DIAG response keys: {list(_diag_resp.keys())}")
-    _props = _diag_resp.get('properties', 'MISSING')
-    _dsrc = _diag_resp.get('data_sources', 'MISSING')
-    log(f"DIAG properties: {_j.dumps(_props)[:400]}")
-    log(f"DIAG data_sources: {_j.dumps(_dsrc)[:400]}")
-    _diag_db_id = _diag_resp.get('id', '')
-    # Try creating a record with the custom property
-    if _diag_db_id:
-        _rec_body = _j.dumps({
-            "parent": {"type": "database_id", "database_id": _diag_db_id},
-            "properties": {
-                "Name": {"title": [{"text": {"content": "Test Record"}}]},
-                "MyStatus": {"select": {"name": "Active"}},
-            }
-        }).encode()
-        _req2 = _ur.Request("https://api.notion.com/v1/pages", data=_rec_body, headers=_diag_headers, method="POST")
-        try:
-            with _ur.urlopen(_req2, timeout=30) as _resp2:
-                _diag_rec = _j.loads(_resp2.read())
-            log(f"DIAG record created OK, id={_diag_rec.get('id','')[:8]}")
-        except _ue.HTTPError as _he:
-            _err = _j.loads(_he.read())
-            log(f"DIAG record FAILED: {_err.get('message','')}")
-except _ue.HTTPError as _he:
-    _err = _j.loads(_he.read())
-    log(f"DIAG direct API FAILED {_he.code}: {_err.get('message','')}")
-except Exception as _de:
-    log(f"DIAG direct API ERROR: {_de}")
-log("DIAG complete")
 
 # ── WORKFLOW REGISTRY ──────────────────────────────────────────────────────────
 log("Creating Workflow Registry database...")
