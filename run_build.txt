@@ -1,1 +1,1 @@
-trigger build v6
+trigger build v7
