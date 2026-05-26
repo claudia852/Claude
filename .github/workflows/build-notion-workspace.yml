@@ -22,15 +22,9 @@ jobs:
     steps:
       - name: Build Notion workspace
         env:
-          _NT: "bnRuXzU3MTY2Mjk1MDA5OXBGaHlPNXRLRmJySDdqa211Z0RWRlNJWmRHTXM2RkFhWG8="
+          _NT: "bnRuXzIyNDQwODExNjgxMkV1SjVjV0xrWHRRNVZvUFd5aU1kQjdGY25GVWo5N1oybXo="
           PAGE_ID: "36c539939ca18021b786c948efb0b98f"
         run: |
-          set +e
-
-          pip3 install --quiet notion-client
-
-          curl -fsSL "https://raw.githubusercontent.com/claudia852/Claude/main/build_workspace.py" -o build_workspace.py
-
           if [ -n "${{ github.event.inputs.notion_token }}" ]; then
             export NOTION_TOKEN="${{ github.event.inputs.notion_token }}"
             export PAGE="${{ github.event.inputs.page_id }}"
@@ -38,23 +32,6 @@ jobs:
             export NOTION_TOKEN=$(echo "$_NT" | base64 -d)
             export PAGE="$PAGE_ID"
           fi
-
-          python3 build_workspace.py "$PAGE" > /tmp/py_out.txt 2>&1
-          py_exit=$?
-
-          # Surface first 30 lines of Python output as annotations
-          i=0
-          while IFS= read -r line && [ $i -lt 30 ]; do
-            echo "::notice title=PyOut::$line"
-            i=$((i+1))
-          done < /tmp/py_out.txt
-
-          if [ $py_exit -ne 0 ]; then
-            # Also surface last 10 lines (likely the error)
-            tail -10 /tmp/py_out.txt | while IFS= read -r line; do
-              echo "::error title=PyError::$line"
-            done
-          fi
-
-          echo "::notice title=ExitCode::python exit=$py_exit"
-          exit $py_exit
+          pip3 install --quiet notion-client
+          curl -fsSL "https://raw.githubusercontent.com/claudia852/Claude/main/build_workspace.py" -o build_workspace.py
+          python3 build_workspace.py "$PAGE"
