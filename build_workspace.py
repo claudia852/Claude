@@ -115,12 +115,14 @@ def create_database(parent_id, title, emoji, properties):
         properties={"Name": {"title": {}}}
     )
     db_id = db["id"]
+    log(f"  created props={list(db.get('properties', {}).keys())}")
     time.sleep(0.5)
 
     # Step 2: rename title property to our custom name
     if title_name != "Name":
         try:
-            notion.databases.update(database_id=db_id, properties={"Name": {"name": title_name}})
+            r2 = notion.databases.update(database_id=db_id, properties={"Name": {"name": title_name}})
+            log(f"  after rename props={list(r2.get('properties', {}).keys())}")
             time.sleep(0.4)
         except Exception as e:
             log(f"  WARNING: Could not rename title for {title}: {e}")
@@ -128,7 +130,8 @@ def create_database(parent_id, title, emoji, properties):
     # Step 3: add all other property columns via update
     if non_title:
         try:
-            notion.databases.update(database_id=db_id, properties=non_title)
+            r3 = notion.databases.update(database_id=db_id, properties=non_title)
+            log(f"  after add props={list(r3.get('properties', {}).keys())}")
             time.sleep(0.4)
         except Exception as e:
             log(f"  WARNING: Could not add properties for {title}: {e}")
