@@ -1,0 +1,30 @@
+name: Build Notion Workspace
+
+on:
+  workflow_dispatch:
+    inputs:
+      page_id:
+        description: 'Notion parent page ID (from page URL, 32-char hex string)'
+        required: true
+        default: '36c539939ca18021b786c948efb0b98f'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install notion-client
+
+      - name: Build Notion workspace
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: python build_workspace.py ${{ github.event.inputs.page_id }}
