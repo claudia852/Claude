@@ -58,13 +58,13 @@ print('Script downloaded, size:', len(open('build_workspace.py').read()))
           tail -30 /tmp/py_out.txt
 
           # Write build output back to repo using git (reliable, no JSON escaping)
-          git clone -q https://github.com/claudia852/Claude.git /tmp/output_repo
+          git clone -q "https://x-access-token:${GH_TOKEN}@github.com/claudia852/Claude.git" /tmp/output_repo
           cp /tmp/py_out.txt /tmp/output_repo/build_output.txt
           git -C /tmp/output_repo config user.email "action@github.com"
           git -C /tmp/output_repo config user.name "GitHub Actions"
           git -C /tmp/output_repo add build_output.txt
           git -C /tmp/output_repo commit -m "workflow: build output"
-          git -C /tmp/output_repo remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/claudia852/Claude.git"
+          git -C /tmp/output_repo pull --rebase -q origin main
           git -C /tmp/output_repo push -q origin main
 
           exit $py_exit
