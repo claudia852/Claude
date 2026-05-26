@@ -128,11 +128,31 @@ def add_relation(database_id, property_name, target_db_id):
     time.sleep(0.35)
 
 def create_record(database_id, properties):
-    notion.pages.create(
-        parent={"type": "database_id", "database_id": database_id},
-        properties=properties
-    )
-    time.sleep(0.35)
+    try:
+        notion.pages.create(
+            parent={"type": "database_id", "database_id": database_id},
+            properties=properties
+        )
+        time.sleep(0.35)
+    except Exception as e:
+        log(f"  WARNING record skipped: {e}")
+
+def get_db_schema(db_id):
+    try:
+        db = notion.databases.retrieve(database_id=db_id)
+        return {n: c.get("type", "") for n, c in db.get("properties", {}).items()}
+    except Exception as e:
+        log(f"  WARNING cannot read schema {db_id}: {e}")
+        return {}
+
+def safe_props(schema, props):
+    if not schema:
+        return props
+    ok = {k: v for k, v in props.items() if k in schema}
+    bad = [k for k in props if k not in schema]
+    if bad:
+        log(f"  (skipped unknown props: {bad})")
+    return ok
 
 def text_prop(value):
     return {"rich_text": [{"type": "text", "text": {"content": str(value)}}]}
@@ -738,10 +758,27 @@ except Exception as e:
 
 section("PHASE 4 — Creating Sample Records")
 
+# Probe actual schemas so we use only properties that really exist
+log("Probing database schemas before inserting records...")
+_schemas = {}
+for _k in ["db_workflows", "db_prompts", "db_clients", "db_analyses",
+           "db_sops", "db_automations", "db_changelog", "db_ideas"]:
+    _schemas[_k] = get_db_schema(built[_k])
+    _t = next((n for n, t in _schemas[_k].items() if t == "title"), "Name")
+    log(f"  {_k}: title='{_t}' props={list(_schemas[_k].keys())}")
+
+def tp(db_key):
+    """Return the title property name for this database."""
+    return next((n for n, t in _schemas.get(db_key, {}).items() if t == "title"), "Name")
+
+def sp(db_key, props):
+    """Keep only props that exist in the database schema."""
+    return safe_props(_schemas.get(db_key, {}), props)
+
 # ── Workflow Registry: UK Credit Risk Analysis ─────────────────────────────────
 log("Adding workflow record: UK Credit Risk Analysis...")
-create_record(built["db_workflows"], {
-    "Workflow Name":     title_prop("UK Credit Risk Analysis"),
+create_record(built["db_workflows"], sp("db_workflows", {
+    tp("db_workflows"):  title_prop("UK Credit Risk Analysis"),
     "Workflow ID":       text_prop("NLC-WFL-2024-001"),
     "Status":            select_prop("Pilot"),
     "Department":        select_prop("Finance"),
@@ -753,7 +790,7 @@ create_record(built["db_workflows"], {
         "and generates professional credit risk reports. Target: fully "
         "automated Phase 2 (extraction) by Q2 2025."
     ),
-})
+}))
 
 # ── 13 Credit Risk Prompts ─────────────────────────────────────────────────────
 credit_risk_prompts = [
@@ -1021,8 +1058,8 @@ credit_risk_prompts = [
 log(f"Adding {len(credit_risk_prompts)} credit risk prompts...")
 for name, pid, category, body, inp, expected, tags_str in credit_risk_prompts:
     tag_list = [t.strip() for t in tags_str.split("|")]
-    create_record(built["db_prompts"], {
-        "Prompt Name":     title_prop(name),
+    create_record(built["db_prompts"], sp("db_prompts", {
+        tp("db_prompts"):  title_prop(name),
         "Prompt ID":       text_prop(pid),
         "Category":        select_prop(category),
         "AI Model":        select_prop("GPT-4o"),
@@ -1033,13 +1070,13 @@ for name, pid, category, body, inp, expected, tags_str in credit_risk_prompts:
         "Expected Output": text_prop(expected),
         "Tags":            multi_prop(tag_list),
         "Created":         date_prop("2024-11-01"),
-    })
+    }))
     log(f"  + {name}")
 
 # ── Sample Client ──────────────────────────────────────────────────────────────
 log("Adding sample client: Acme Manufacturing Ltd...")
-create_record(built["db_clients"], {
-    "Client Name":    title_prop("Acme Manufacturing Ltd"),
+create_record(built["db_clients"], sp("db_clients", {
+    tp("db_clients"): title_prop("Acme Manufacturing Ltd"),
     "Client ID":      text_prop("NLC-CLI-2024-001"),
     "Status":         select_prop("Active"),
     "Industry":       select_prop("Manufacturing"),
@@ -1048,12 +1085,12 @@ create_record(built["db_clients"], {
     "Onboarded":      date_prop("2024-11-01"),
     "Notes":          text_prop("First pilot client for UK Credit Risk Analysis workflow. "
                                 "Credit facility renewal meeting scheduled Q1 2025."),
-})
+}))
 
 # ── Sample Analysis ────────────────────────────────────────────────────────────
 log("Adding sample analysis record...")
-create_record(built["db_analyses"], {
-    "Analysis Name":      title_prop("Acme Manufacturing Ltd — Full Accounts 2024"),
+create_record(built["db_analyses"], sp("db_analyses", {
+    tp("db_analyses"):    title_prop("Acme Manufacturing Ltd — Full Accounts 2024"),
     "Analysis ID":        text_prop("NLC-CRA-2024-001"),
     "Company Name":       text_prop("Acme Manufacturing Ltd"),
     "Companies House No": text_prop("04521890"),
@@ -1063,19 +1100,19 @@ create_record(built["db_analyses"], {
     "Priority":           select_prop("High"),
     "Notes":              text_prop("Client has credit facility renewal Q1 2025. "
                                     "Full accounts for year ending 31 March 2024."),
-})
+}))
 
 # ── Sample SOP ─────────────────────────────────────────────────────────────────
 log("Adding SOP record: How to Run a Credit Risk Analysis...")
-create_record(built["db_sops"], {
-    "SOP Name":     title_prop("How to Run a UK Credit Risk Analysis"),
+create_record(built["db_sops"], sp("db_sops", {
+    tp("db_sops"):  title_prop("How to Run a UK Credit Risk Analysis"),
     "SOP ID":       text_prop("NLC-SOP-2024-001"),
     "Status":       select_prop("Active"),
     "Version":      text_prop("v1.0"),
     "Department":   select_prop("Finance"),
     "Last Reviewed":date_prop("2024-11-01"),
     "Tags":         multi_prop(["Credit Risk", "Process", "Technical"]),
-})
+}))
 
 # ── Sample Automations ─────────────────────────────────────────────────────────
 log("Adding automation ideas...")
@@ -1106,15 +1143,15 @@ automation_ideas = [
      "Medium", "Idea"),
 ]
 for name, aid, tool, trigger, action, priority, status in automation_ideas:
-    create_record(built["db_automations"], {
-        "Automation Name": title_prop(name),
+    create_record(built["db_automations"], sp("db_automations", {
+        tp("db_automations"): title_prop(name),
         "Automation ID":   text_prop(aid),
         "Tool":            select_prop(tool),
         "Status":          select_prop(status),
         "Trigger":         text_prop(trigger),
         "Action":          text_prop(action),
         "Priority":        select_prop(priority),
-    })
+    }))
     log(f"  + {name}")
 
 # ── Sample Change Log Entries ──────────────────────────────────────────────────
@@ -1128,8 +1165,8 @@ changelog_entries = [
      "Pilot launch of UK Credit Risk Analysis workflow with 13 prompts", "High"),
 ]
 for title, cid, ctype, area, before, after, reason, impact in changelog_entries:
-    create_record(built["db_changelog"], {
-        "Change Title":   title_prop(title),
+    create_record(built["db_changelog"], sp("db_changelog", {
+        tp("db_changelog"): title_prop(title),
         "Change ID":      text_prop(cid),
         "Change Type":    select_prop(ctype),
         "Area":           select_prop(area),
@@ -1138,7 +1175,7 @@ for title, cid, ctype, area, before, after, reason, impact in changelog_entries:
         "Version After":  text_prop(after),
         "Reason":         text_prop(reason),
         "Impact":         select_prop(impact),
-    })
+    }))
 
 # ── Sample Ideas ────────────────────────────────────────────────────────────────
 log("Adding ideas backlog entries...")
@@ -1153,15 +1190,15 @@ ideas = [
      "The Altman Z-Score is a well-established insolvency predictor. Adding this calculation to the solvency prompt would add quantitative rigour.", "Small"),
 ]
 for idea_title, area, status, priority, notes, effort in ideas:
-    create_record(built["db_ideas"], {
-        "Idea Title":     title_prop(idea_title),
+    create_record(built["db_ideas"], sp("db_ideas", {
+        tp("db_ideas"):   title_prop(idea_title),
         "Area":           select_prop(area),
         "Status":         select_prop(status),
         "Priority":       select_prop(priority),
         "Notes":          text_prop(notes),
         "Effort Estimate":select_prop(effort),
         "Submitted Date": date_prop("2024-11-01"),
-    })
+    }))
 
 log("✓ All sample records created")
 
