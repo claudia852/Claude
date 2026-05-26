@@ -23,6 +23,10 @@ jobs:
     timeout-minutes: 15
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build Notion workspace
         env:
           _NT: "bnRuXzIyNDQwODExNjgxMkV1SjVjV0xrWHRRNVZvUFd5aU1kQjdGY25GVWo5N1oybXo="
@@ -41,56 +45,16 @@ jobs:
 
           pip3 install --quiet notion-client
 
-          # Download build script via authenticated GitHub API (bypasses CDN cache)
-          curl -s -H "Authorization: token $GH_TOKEN" \
-            "https://api.github.com/repos/claudia852/Claude/contents/build_workspace.py" \
-            | python3 -c "
-import sys, json, base64
-d = json.load(sys.stdin)
-open('build_workspace.py', 'wb').write(base64.b64decode(d['content'].replace('\n', '')))
-print('Script downloaded, size:', len(open('build_workspace.py').read()))
-"
-
-          python3 build_workspace.py "$PAGE" > /tmp/py_out.txt 2>&1
+          python3 build_workspace.py "$PAGE" > build_output.txt 2>&1
           py_exit=$?
 
           echo "--- build exit: $py_exit ---"
-          tail -30 /tmp/py_out.txt
+          tail -30 build_output.txt
 
-          # Write build output via Python (writes JSON body to file, then curl uploads)
-          python3 -c '
-          import base64, json, os, urllib.request, urllib.error
-          with open("/tmp/py_out.txt", "rb") as f:
-              content = base64.b64encode(f.read()).decode("ascii")
-          token = os.environ.get("GH_TOKEN", "")
-          url = "https://api.github.com/repos/claudia852/Claude/contents/build_output.txt"
-          hdrs = {"Authorization": "token " + token, "Content-Type": "application/json",
-                  "Accept": "application/vnd.github.v3+json"}
-          sha = ""
-          try:
-              req = urllib.request.Request(url, headers=hdrs)
-              with urllib.request.urlopen(req) as r:
-                  sha = json.loads(r.read()).get("sha", "")
-              print("write-back: SHA " + sha[:12])
-          except Exception as e:
-              print("write-back: SHA lookup failed: " + str(e))
-          body = {"message": "workflow: build output", "content": content}
-          if sha:
-              body["sha"] = sha
-          with open("/tmp/wb_body.json", "wb") as f:
-              f.write(json.dumps(body).encode())
-          print("write-back: body ready")
-          '
-
-          curl -s -X PUT \
-            -H "Authorization: token $GH_TOKEN" \
-            -H "Content-Type: application/json" \
-            --data-binary @/tmp/wb_body.json \
-            "https://api.github.com/repos/claudia852/Claude/contents/build_output.txt" \
-            | python3 -c "
-import sys, json
-d = json.load(sys.stdin)
-print('write-back result:', d.get('content', {}).get('name') or d.get('message', 'unknown'))
-"
+          git config user.email "action@github.com"
+          git config user.name "GitHub Actions"
+          git add build_output.txt
+          git commit -m "workflow: build output" || true
+          git push
 
           exit $py_exit
