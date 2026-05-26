@@ -103,14 +103,37 @@ def bulleted(text):
     }
 
 def create_database(parent_id, title, emoji, properties):
+    # Find the title property name and all non-title properties
+    title_name = next((k for k, v in properties.items() if isinstance(v, dict) and "title" in v), "Name")
+    non_title = {k: v for k, v in properties.items() if not (isinstance(v, dict) and "title" in v)}
+
+    # Step 1: create with just the default "Name" title (most reliable)
     db = notion.databases.create(
         parent={"type": "page_id", "page_id": parent_id},
         icon={"type": "emoji", "emoji": emoji},
         title=[{"text": {"content": title}}],
-        properties=properties
+        properties={"Name": {"title": {}}}
     )
-    time.sleep(0.4)
-    return db["id"]
+    db_id = db["id"]
+    time.sleep(0.5)
+
+    # Step 2: rename title property to our custom name
+    if title_name != "Name":
+        try:
+            notion.databases.update(database_id=db_id, properties={"Name": {"name": title_name}})
+            time.sleep(0.4)
+        except Exception as e:
+            log(f"  WARNING: Could not rename title for {title}: {e}")
+
+    # Step 3: add all other property columns via update
+    if non_title:
+        try:
+            notion.databases.update(database_id=db_id, properties=non_title)
+            time.sleep(0.4)
+        except Exception as e:
+            log(f"  WARNING: Could not add properties for {title}: {e}")
+
+    return db_id
 
 def add_relation(database_id, property_name, target_db_id):
     notion.databases.update(
