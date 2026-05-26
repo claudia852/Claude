@@ -115,6 +115,7 @@ def create_database(parent_id, title, emoji, properties):
         properties={"Name": {"title": {}}}
     )
     db_id = db["id"]
+    log(f"  db keys={list(db.keys())}")
     log(f"  created props={list(db.get('properties', {}).keys())}")
     time.sleep(0.5)
 
