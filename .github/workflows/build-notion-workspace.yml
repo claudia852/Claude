@@ -27,24 +27,9 @@ jobs:
         run: |
           set +e
 
-          echo "::notice title=Step1::python3: $(python3 --version 2>&1)"
-          echo "::notice title=Step2::pip3: $(pip3 --version 2>&1 | head -1)"
-
           pip3 install --quiet notion-client
-          pip_exit=$?
-          echo "::notice title=Step3::pip install exit=$pip_exit"
-          if [ $pip_exit -ne 0 ]; then
-            echo "::error title=PipFailed::pip3 install notion-client failed with code $pip_exit"
-            exit 1
-          fi
 
           curl -fsSL "https://raw.githubusercontent.com/claudia852/Claude/main/build_workspace.py" -o build_workspace.py
-          curl_exit=$?
-          echo "::notice title=Step4::curl exit=$curl_exit"
-          if [ $curl_exit -ne 0 ]; then
-            echo "::error title=CurlFailed::curl download failed with code $curl_exit"
-            exit 1
-          fi
 
           if [ -n "${{ github.event.inputs.notion_token }}" ]; then
             export NOTION_TOKEN="${{ github.event.inputs.notion_token }}"
@@ -54,14 +39,22 @@ jobs:
             export PAGE="$PAGE_ID"
           fi
 
-          token_len=${#NOTION_TOKEN}
-          echo "::notice title=Step5::token_length=$token_len page=$PAGE"
-          if [ $token_len -lt 10 ]; then
-            echo "::error title=TokenFailed::NOTION_TOKEN decode failed, length=$token_len"
-            exit 1
+          python3 build_workspace.py "$PAGE" > /tmp/py_out.txt 2>&1
+          py_exit=$?
+
+          # Surface first 30 lines of Python output as annotations
+          i=0
+          while IFS= read -r line && [ $i -lt 30 ]; do
+            echo "::notice title=PyOut::$line"
+            i=$((i+1))
+          done < /tmp/py_out.txt
+
+          if [ $py_exit -ne 0 ]; then
+            # Also surface last 10 lines (likely the error)
+            tail -10 /tmp/py_out.txt | while IFS= read -r line; do
+              echo "::error title=PyError::$line"
+            done
           fi
 
-          python3 build_workspace.py "$PAGE"
-          py_exit=$?
-          echo "::notice title=Step6::python exit=$py_exit"
+          echo "::notice title=ExitCode::python exit=$py_exit"
           exit $py_exit
