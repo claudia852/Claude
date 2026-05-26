@@ -16,7 +16,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
 
     steps:
@@ -25,6 +25,27 @@ jobs:
           _NT: "bnRuXzU3MTY2Mjk1MDA5OXBGaHlPNXRLRmJySDdqa211Z0RWRlNJWmRHTXM2RkFhWG8="
           PAGE_ID: "36c539939ca18021b786c948efb0b98f"
         run: |
+          set +e
+
+          echo "::notice title=Step1::python3: $(python3 --version 2>&1)"
+          echo "::notice title=Step2::pip3: $(pip3 --version 2>&1 | head -1)"
+
+          pip3 install --quiet notion-client
+          pip_exit=$?
+          echo "::notice title=Step3::pip install exit=$pip_exit"
+          if [ $pip_exit -ne 0 ]; then
+            echo "::error title=PipFailed::pip3 install notion-client failed with code $pip_exit"
+            exit 1
+          fi
+
+          curl -fsSL "https://raw.githubusercontent.com/claudia852/Claude/main/build_workspace.py" -o build_workspace.py
+          curl_exit=$?
+          echo "::notice title=Step4::curl exit=$curl_exit"
+          if [ $curl_exit -ne 0 ]; then
+            echo "::error title=CurlFailed::curl download failed with code $curl_exit"
+            exit 1
+          fi
+
           if [ -n "${{ github.event.inputs.notion_token }}" ]; then
             export NOTION_TOKEN="${{ github.event.inputs.notion_token }}"
             export PAGE="${{ github.event.inputs.page_id }}"
@@ -32,6 +53,15 @@ jobs:
             export NOTION_TOKEN=$(echo "$_NT" | base64 -d)
             export PAGE="$PAGE_ID"
           fi
-          python3 -m pip install --quiet --break-system-packages notion-client
-          curl -fsSL "https://raw.githubusercontent.com/claudia852/Claude/main/build_workspace.py" -o build_workspace.py
+
+          token_len=${#NOTION_TOKEN}
+          echo "::notice title=Step5::token_length=$token_len page=$PAGE"
+          if [ $token_len -lt 10 ]; then
+            echo "::error title=TokenFailed::NOTION_TOKEN decode failed, length=$token_len"
+            exit 1
+          fi
+
           python3 build_workspace.py "$PAGE"
+          py_exit=$?
+          echo "::notice title=Step6::python exit=$py_exit"
+          exit $py_exit
