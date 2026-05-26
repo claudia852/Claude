@@ -116,7 +116,8 @@ def create_database(parent_id, title, emoji, properties):
     )
     db_id = db["id"]
     log(f"  db keys={list(db.keys())}")
-    log(f"  created props={list(db.get('properties', {}).keys())}")
+    import json as _json
+    log(f"  raw={_json.dumps(db)[:600]}")
     time.sleep(0.5)
 
     # Step 2: rename title property to our custom name
