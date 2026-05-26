@@ -14,6 +14,9 @@ on:
         required: true
         default: '36c539939ca18021b786c948efb0b98f'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -24,11 +27,11 @@ jobs:
         env:
           _NT: "bnRuXzIyNDQwODExNjgxMkV1SjVjV0xrWHRRNVZvUFd5aU1kQjdGY25GVWo5N1oybXo="
           PAGE_ID: "36c539939ca18021b786c948efb0b98f"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set +e
 
           pip3 install --quiet notion-client
-
           curl -fsSL "https://raw.githubusercontent.com/claudia852/Claude/main/build_workspace.py" -o build_workspace.py
 
           if [ -n "${{ github.event.inputs.notion_token }}" ]; then
@@ -42,17 +45,20 @@ jobs:
           python3 build_workspace.py "$PAGE" > /tmp/py_out.txt 2>&1
           py_exit=$?
 
-          i=0
-          while IFS= read -r line && [ $i -lt 30 ]; do
-            echo "::notice title=PyOut::$line"
-            i=$((i+1))
-          done < /tmp/py_out.txt
-
-          if [ $py_exit -ne 0 ]; then
-            tail -15 /tmp/py_out.txt | while IFS= read -r line; do
-              echo "::error title=PyError::$line"
-            done
+          # Commit build output to repo so it can be read
+          content=$(base64 -w 0 /tmp/py_out.txt)
+          sha=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/claudia852/Claude/contents/build_output.txt" \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('sha',''))" 2>/dev/null)
+          if [ -n "$sha" ]; then
+            body="{\"message\":\"workflow: build output\",\"content\":\"$content\",\"sha\":\"$sha\"}"
+          else
+            body="{\"message\":\"workflow: build output\",\"content\":\"$content\"}"
           fi
+          curl -s -X PUT \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$body" \
+            "https://api.github.com/repos/claudia852/Claude/contents/build_output.txt" > /dev/null
 
-          echo "::notice title=ExitCode::python exit=$py_exit"
           exit $py_exit
