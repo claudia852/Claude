@@ -1,1 +1,1 @@
-trigger build v23
+trigger build v24

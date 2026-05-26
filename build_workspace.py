@@ -420,6 +420,59 @@ log("✓ Page hierarchy complete")
 
 section("PHASE 2 — Building Databases")
 
+# ── DIAGNOSTIC: test database schema creation directly via urllib ─────────────
+import json as _j, urllib.request as _ur, urllib.error as _ue
+import notion_client as _nc_module
+log(f"notion-client version: {getattr(_nc_module, '__version__', 'unknown')}")
+_diag_headers = {
+    "Authorization": f"Bearer {TOKEN}",
+    "Content-Type": "application/json",
+    "Notion-Version": "2022-06-28",
+}
+_diag_body = _j.dumps({
+    "parent": {"type": "page_id", "page_id": ROOT_PARENT_ID},
+    "title": [{"type": "text", "text": {"content": "DIAG TEST DB"}}],
+    "properties": {
+        "Name": {"title": {}},
+        "MyStatus": {"select": {"options": [{"name": "Active", "color": "green"}]}},
+        "MyText": {"rich_text": {}},
+    }
+}).encode()
+try:
+    _req = _ur.Request("https://api.notion.com/v1/databases", data=_diag_body, headers=_diag_headers, method="POST")
+    with _ur.urlopen(_req, timeout=30) as _resp:
+        _diag_resp = _j.loads(_resp.read())
+    log(f"DIAG direct API status: 2xx OK")
+    log(f"DIAG response keys: {list(_diag_resp.keys())}")
+    _props = _diag_resp.get('properties', 'MISSING')
+    _dsrc = _diag_resp.get('data_sources', 'MISSING')
+    log(f"DIAG properties: {_j.dumps(_props)[:400]}")
+    log(f"DIAG data_sources: {_j.dumps(_dsrc)[:400]}")
+    _diag_db_id = _diag_resp.get('id', '')
+    # Try creating a record with the custom property
+    if _diag_db_id:
+        _rec_body = _j.dumps({
+            "parent": {"type": "database_id", "database_id": _diag_db_id},
+            "properties": {
+                "Name": {"title": [{"text": {"content": "Test Record"}}]},
+                "MyStatus": {"select": {"name": "Active"}},
+            }
+        }).encode()
+        _req2 = _ur.Request("https://api.notion.com/v1/pages", data=_rec_body, headers=_diag_headers, method="POST")
+        try:
+            with _ur.urlopen(_req2, timeout=30) as _resp2:
+                _diag_rec = _j.loads(_resp2.read())
+            log(f"DIAG record created OK, id={_diag_rec.get('id','')[:8]}")
+        except _ue.HTTPError as _he:
+            _err = _j.loads(_he.read())
+            log(f"DIAG record FAILED: {_err.get('message','')}")
+except _ue.HTTPError as _he:
+    _err = _j.loads(_he.read())
+    log(f"DIAG direct API FAILED {_he.code}: {_err.get('message','')}")
+except Exception as _de:
+    log(f"DIAG direct API ERROR: {_de}")
+log("DIAG complete")
+
 # ── WORKFLOW REGISTRY ──────────────────────────────────────────────────────────
 log("Creating Workflow Registry database...")
 built["db_workflows"] = create_database(
