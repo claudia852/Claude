@@ -20,8 +20,6 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -29,6 +27,10 @@ jobs:
 
       - name: Install dependencies
         run: pip install notion-client
+
+      - name: Download build script
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/claudia852/Claude/main/build_workspace.py -o build_workspace.py
 
       - name: Build Notion workspace
         env:
