@@ -1,1 +1,1 @@
-trigger build v17
+trigger build v18
