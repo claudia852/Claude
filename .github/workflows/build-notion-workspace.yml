@@ -32,6 +32,6 @@ jobs:
             export NOTION_TOKEN=$(echo "$_NT" | base64 -d)
             export PAGE="$PAGE_ID"
           fi
-          pip3 install --quiet notion-client
-          curl -fsSL https://raw.githubusercontent.com/claudia852/Claude/main/build_workspace.py -o build_workspace.py
-          python3 build_workspace.py $PAGE
+          python3 -m pip install --quiet --break-system-packages notion-client
+          curl -fsSL "https://raw.githubusercontent.com/claudia852/Claude/main/build_workspace.py" -o build_workspace.py
+          python3 build_workspace.py "$PAGE"
